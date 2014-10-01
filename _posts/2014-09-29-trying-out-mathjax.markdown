@@ -2,61 +2,132 @@
 layout: post
 title:  "Trying out MathJax"
 date:   2014-09-28 15:32:34
-categories: latex math mathjax
+categories: mathjax
 ---
-<style TYPE="text/css">
-    code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
-</style>
-<script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        tex2jax: {
-            inlineMath: [['$','$'], ['\\(','\\)']],
-            displayMath: [['$$','$$'], ['\\[','\\]']],
-            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'], // removed 'code' entry
-            processEscapes: false,
-        },
-        TeX: { equationNumbers: {autoNumber: "AMS"} }
-    });
-    MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for(i = 0; i < all.length; i += 1) {
-            all[i].SourceElement().parentNode.className += ' has-jax';
+
+Used the samples from [mathjax.org demo] [mathjax] with proper code indentations
+and wrapping them in latex-equations.
+
+References to the equations:
+\eqref{eq:lorenz},
+\eqref{eq:cauchy},
+\eqref{eq:cross},
+\eqref{eq:choose},
+\eqref{eq:ramanujan},
+\eqref{eq:rogers},
+\eqref{eq:maxwell},
+
+
+The Lorenz Equations
+--------------------
+
+$$
+\begin{equation}
+    \label{eq:lorenz}
+    \begin{aligned}
+        \dot{x} & = \sigma(y-x) \\
+        \dot{y} & = \rho x - y - xz \\
+        \dot{z} & = -\beta z + xy
+    \end{aligned}
+\end{equation}
+$$
+
+The Cauchy-Schwarz Inequality
+-----------------------------
+
+$$
+\begin{equation}
+    \label{eq:cauchy}
+    \left(
+        \sum_{k=1}^n a_k b_k
+    \right)^2
+    \leq
+    \left(
+        \sum_{k=1}^n a_k^2
+    \right)
+    \left(
+        \sum_{k=1}^n b_k^2
+    \right)
+\end{equation}
+$$
+
+A Cross Product Formula
+-----------------------
+
+$$
+\begin{equation}
+    \label{eq:cross}
+    \mathbf{V}_1 \times \mathbf{V}_2 =
+    \begin{vmatrix}
+        \mathbf{i}                    & \mathbf{j}                    & \mathbf{k} \\
+        \frac{\partial X}{\partial u} & \frac{\partial Y}{\partial u} & 0 \\
+        \frac{\partial X}{\partial v} & \frac{\partial Y}{\partial v} & 0
+    \end{vmatrix}
+\end{equation}
+$$
+
+Probability of getting $k$ heads when flipping $n$ coins
+--------------------------------------------------------
+
+$$
+\begin{equation}
+    \label{eq:choose}
+    P(E) = {n \choose k} p^k (1-p)^{n-k}
+\end{equation}
+$$
+
+An Identity of Ramanujan
+------------------------
+
+$$
+\begin{equation}
+    \label{eq:ramanujan}
+    \frac{1}{\Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{\frac25 \pi}} =
+    1+\frac{
+        e^{-2\pi}
+    }{
+        1+\frac{
+            e^{-4\pi}
+        }{
+            1+\frac{
+                e^{-6\pi}
+            }
+            {
+                1+\frac{e^{-8\pi}} {1+\ldots}
+            }
         }
-    });
-</script>
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-Trying out inline equation, equation \eqref{eq:equation}, multiline equation \eqref{eq:multiline} and cases \eqref{eq:cases}.
-
-Inline
-------
-Pre $E = mc^2$ post.
-
-Equation
---------
-\begin{equation}
-    \label{eq:equation}
-    E = mc^2
-\end{equation}
-
-Split
------
-$$
-\begin{equation}
-    \label{eq:multiline}
-    \begin{split}
-        A &=& B \\
-          &=& C
-    \end{split}
+    }
 \end{equation}
 $$
 
-Cases
------
+A Rogers-Ramanujan Identity
+---------------------------
+
 $$
 \begin{equation}
-    \label{eq:cases}
-    f(n) = \begin{cases} n/2 &\mbox{if } n \equiv 0 \\
-    (3n +1)/2 & \mbox{if } n \equiv 1 \end{cases} \pmod{2}
+    \label{eq:rogers}
+    1 + \frac{q^2}{(1-q)} + \frac{q^6}{(1-q)(1-q^2)} + \cdots =
+    \prod_{j\in\mathbb{Z}_{\ge 0}}\frac{1}{(1-q^{5j+2})(1-q^{5j+3})},
+    |q|\lt 1
 \end{equation}
 $$
+
+Maxwell's Equations
+-------------------
+
+$$
+\begin{equation}
+    \label{eq:maxwell}
+    \begin{aligned}
+        \nabla \times \vec{\mathbf{B}} - \frac{\partial\vec{\mathbf{E}}}{c\partial t}   & = \frac{4\pi\vec{\mathbf{j}}}{c} \\
+        \nabla \cdot \vec{\mathbf{E}}                                                   & = 4 \pi \rho \\
+        \nabla \times \vec{\mathbf{E}}\, + \frac{\partial\vec{\mathbf{B}}}{c\partial t} & = \vec{\mathbf{0}} \\
+        \nabla \cdot \vec{\mathbf{B}}                                                   & = 0
+    \end{aligned}
+\end{equation}
+$$
+
+Finally, while display equations look good for a page of samples the ability to mix math and text in a paragraph is also important. This expression $\sqrt{3x-1}+(1+x)^2$ is an example of an inline equation.  As you see, MathJax equations can be used this way as well, without unduly disturbing the spacing between lines.
+
+
+[mathjax]: http://www.mathjax.org/demos/tex-samples/ 'Mathjax Demo'
