@@ -9,7 +9,7 @@ Really nice to be able to list all combinations of a set or a dictionary.
 For example if you are testing a database update and want to check invariants
 under all possible updates.
 
-<script src="https://gist.github.com/Jim-Holmstroem/d6df644ba4062f02e59d.js"></script>
+{% gist Jim-Holmstroem/d6df644ba4062f02e59d %}
 
 Usage
 -----
