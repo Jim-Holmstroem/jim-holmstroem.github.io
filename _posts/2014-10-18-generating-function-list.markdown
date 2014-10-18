@@ -78,7 +78,7 @@ $$
                         &= \sum\limits_{k\in\mathbb{Z}_{\ge 0}} e^{-m}\frac{m^k}{k!}t^k \nonumber \\
                         &= e^{-m}\sum\limits_{k\in\mathbb{Z}_{\ge 0}} \frac{(mt)^k}{k!} \nonumber \\
                         &= e^{-m}e^{mt} \nonumber \\
-                        &= (e^{t-1})^m
+                        &= (e^{t-1})^m = e^{m(t-1)}
 \end{align}
 $$
 
