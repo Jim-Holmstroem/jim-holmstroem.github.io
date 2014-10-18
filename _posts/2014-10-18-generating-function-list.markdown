@@ -89,7 +89,18 @@ $$
     g_{\text{Bin}(n, p)}(t) &= \sum\limits_{k=0}^n \text{Bin}(n, p)(k)t^k \nonumber \\
                             &= \sum\limits_{k=0}^n \binom{n}{k} p^k(1-p)^{n-k}t^k \nonumber \\
                             &= \sum\limits_{k=0}^n \binom{n}{k} (pt)^k(1-p)^{n-k} \nonumber \\
-                            &= (pt + (1-p))^n
+                            &= (pt + (1-p))^n \label{eq:binomial}
+\end{align}
+$$
+
+
+Bernoulli
+---------
+
+$$
+\begin{align}
+    g_{\text{Be}(p)} &= g_{\text{Bin}(n=1, p)} \nonumber \\
+                     &\stackrel{\eqref{eq:binomial}}{=} pt + (1-p)
 \end{align}
 $$
 
