@@ -5,8 +5,9 @@ date:   2014-10-18 15:16:00
 categories: probability
 ---
 
-Couldn't find any list of generating functions for distributions so I started
-compiling my own. (They will be filled in as they appear in the wild)
+Couldn't find any list of generating functions for distributions on the Internet
+so I started compiling my own.
+(They will be filled in as they appear in the wild)
 
 Definition
 ----------
