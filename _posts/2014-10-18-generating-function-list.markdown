@@ -12,6 +12,7 @@ Definition
 ----------
 
 We use the simpler notation for the generating function of $X\in F$
+
 $$
 \begin{equation}
     g_{X}(t) \overset{\text{def}}{=} g_{F}(t)
@@ -19,12 +20,41 @@ $$
 $$
 
 And by definition the moment generating function is
+
 $$
 \begin{equation}
-    g_{X}(t) \overset{def}{=} E[t^X] = \begin{cases}
-        \sum t^k p_X(k) &\quad X\, \text{discrete} \\
-        \int t^k f_X(k) dx &\quad X\, \text{continuous} \\
-    \end{cases}
+    g_{X}(t) \overset{def}{=} E[t^X] =
+        \sum t^k p_X(k)
+\end{equation}
+$$
+
+The random variables $X$ are in all cases $\mathbb{Z}_{\ge 0}$
+
+Sum
+---
+$X_i$ are independent random variables.
+
+$$
+\begin{equation}
+    g_{(\sum X_i)}(t) = E[t^{\sum X_i}] = E\left[\prod t^{X_i} \right] = \prod E[t^{X_i}] = \prod g_{X_i}(t)
+\end{equation}
+$$
+
+Scale
+-----
+
+$$
+\begin{equation}
+    g_{aX}(t) = E[t^{aX}] = E[(t^a)^X] = g_{X}(t^a)
+\end{equation}
+$$
+
+Translation
+-----------
+
+$$
+\begin{equation}
+    g_{X+b}(t) = E[t^{X+b}] = E[t^Xt^b] = E[t^X]t^b = g_{X}(t)t^b
 \end{equation}
 $$
 
@@ -48,9 +78,17 @@ $$
     g_{\text{Bin}(n, p)}(t) &= \sum\limits_{k=0}^n \text{Bin}(n, p)(k)t^k \nonumber \\
                             &= \sum\limits_{k=0}^n \binom{n}{k} p^k(1-p)^{n-k}t^k \nonumber \\
                             &= \sum\limits_{k=0}^n \binom{n}{k} (pt)^k(1-p)^{n-k} \nonumber \\
-                            &= (pt + (1-p))^n \nonumber \\
-                            &= ((t-1)p + 1)^n
+                            &= (pt + (1-p))^n
 \end{align}
 $$
 
-
+Geometric
+---------
+$$
+\begin{align}
+    g_{\text{Ge}(p)}(t) &= \sum\limits_{k\in\mathbb{Z}_{\ge 0}} \text{Ge}(p)(k) t^k \nonumber \\
+                        &= \sum\limits_{k\in\mathbb{Z}_{\ge 0}} p(1-p)^k t^k \nonumber \\
+                        &= p\sum\limits_{k\in\mathbb{Z}_{\ge 0}} ((1-p)t)^k \nonumber \\
+                        &= \frac{p}{1-(1-p)t}, \quad |t| < \frac{1}{1-p}
+\end{align}
+$$
