@@ -59,6 +59,15 @@ $$
 \end{equation}
 $$
 
+Dirac
+-----
+$$
+\begin{align}
+    g_{\delta(a)}(t) &= \sum\limits_{k\in\mathbb{Z}_{\ge 0}} \delta(a)(k) t^k \nonumber \\
+                     &= \sum\limits_{k\in\mathbb{Z}_{\ge 0}} \delta_a(k) t^k \nonumber \\
+                     &= t^a \nonumber \\
+\end{align}
+$$
 
 Poission
 --------
