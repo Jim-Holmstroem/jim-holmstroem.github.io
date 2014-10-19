@@ -114,3 +114,18 @@ $$
                         &= \frac{p}{1-(1-p)t}, \quad |t| < \frac{1}{1-p}
 \end{align}
 $$
+
+First Success
+------------
+
+$$
+\begin{align}
+    g_{\text{Fs}(p)}(t) &= \sum\limits_{k\in\mathbb{Z}_{\ge 1}} \text{Fs}(p)(k) t^k \nonumber \\
+                        &= \sum\limits_{k\in\mathbb{Z}_{\ge 1}} p(1-p)^{k-1} t^k \nonumber \\
+                        &= \frac{p}{1-p}\sum\limits_{k\in\mathbb{Z}_{\ge 1}} ((1-p)t)^k \nonumber \\
+                        &= \frac{p}{1-p}\left(\sum\limits_{k\in\mathbb{Z}_{\ge 0}} ((1-p)t)^k - 1\right) \nonumber \\
+                        &= \frac{p}{1-p}\left(\frac{1}{1-(1-p)t} - 1\right),\quad |(1-p)t|<1 \nonumber \\
+                        &= \frac{p}{1-p} \frac{1-(1-(1-p)t)}{1-(1-p)t} \nonumber \\
+                        &= \frac{pt}{1-(1-p)t},\quad |(1-p)t|<1
+\end{align}
+$$
