@@ -73,7 +73,6 @@ $$
                              &= \frac{1}{k!}\sum_{k'} p_X(k') \frac{k'!}{(k'-k)!}\delta(k'-k) \nonumber \\
                              &= \frac{1}{k!}\sum_{k'=k} p_X(k') \frac{k'!}{(k'-k)!}\delta(k'-k) \nonumber \\
                              &= \frac{1}{k!} p_X(k) \frac{k!}{0!} \cdot 1 \nonumber \\
-                             &= \frac{1}{k!} p_X(k) k! \nonumber \\
                              &= p_X(k)
 
 \end{align}
