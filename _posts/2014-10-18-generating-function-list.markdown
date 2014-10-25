@@ -148,6 +148,7 @@ $$
                         &= \frac{p}{1-p}\left(\sum\limits_{k\in\mathbb{Z}_{\ge 0}} ((1-p)t)^k - 1\right) \nonumber \\
                         &= \frac{p}{1-p}\left(\frac{1}{1-(1-p)t} - 1\right),\quad |(1-p)t|<1 \nonumber \\
                         &= \frac{p}{1-p} \frac{1-(1-(1-p)t)}{1-(1-p)t} \nonumber \\
-                        &= \frac{pt}{1-(1-p)t},\quad |(1-p)t|<1
+                        &= \frac{pt}{1-(1-p)t},\quad |(1-p)t|<1 \nonumber \\
+                        &= \frac{pt}{1-(1-p)t},\quad |t|<1
 \end{align}
 $$
