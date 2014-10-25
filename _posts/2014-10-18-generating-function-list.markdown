@@ -9,6 +9,8 @@ Couldn't find any list of generating functions for distributions on the Internet
 so I started compiling my own.
 (They will be filled in as they appear in the wild)
 
+
+
 Definition
 ----------
 
@@ -133,7 +135,7 @@ $$
     g_{\text{Ge}(p)}(t) &\overset{\eqref{eq:generatingfunctiondefinition}}{=} \sum\limits_{k\in\mathbb{Z}_{\ge 0}} \text{Ge}(p)(k) t^k \nonumber \\
                         &= \sum\limits_{k\in\mathbb{Z}_{\ge 0}} p(1-p)^k t^k \nonumber \\
                         &= p\sum\limits_{k\in\mathbb{Z}_{\ge 0}} ((1-p)t)^k \nonumber \\
-                        &= \frac{p}{1-(1-p)t}, \quad |t| < \frac{1}{1-p}
+                        &= \frac{p}{1-(1-p)t}, \quad |(1-p)t| < 1
 \end{align}
 $$
 
