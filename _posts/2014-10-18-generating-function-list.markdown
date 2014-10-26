@@ -62,8 +62,8 @@ $$
 \end{equation}
 $$
 
-Evaluate $p_X(k)$
------------------
+Evaluate $p_X(k)$ (inverse)
+---------------------------
 
 $$
 \begin{align}
@@ -75,10 +75,40 @@ $$
                              &= \frac{1}{k!}\sum_{k'} p_X(k') \frac{k'!}{(k'-k)!}\delta(k'-k) \nonumber \\
                              &= \frac{1}{k!}\sum_{k'=k} p_X(k') \frac{k'!}{(k'-k)!}\delta(k'-k) \nonumber \\
                              &= \frac{1}{k!} p_X(k) \frac{k!}{0!} \cdot 1 \nonumber \\
-                             &= p_X(k)
-
+                             &= p_X(k) \label{eq:evaluate_generating}
 \end{align}
 $$
+
+
+Inverse of a polynomial $g_X(t) = \sum\limits_n c_n t^n$
+----------------------------------------------------
+
+$$
+\begin{align}
+    p_X(k) &\overset{\eqref{eq:evaluate_generating}}{=} \frac{d^k}{k!dt^k} g_X(t)\Bigg|_{t=0,\, g_X(t) = \sum\limits_n c_n t^n} \nonumber \\
+           &= \frac{d^k}{k!dt^k} \sum\limits_n c_n t^n \Bigg|_{t=0} \nonumber \\
+           &= \sum\limits_n \frac{d^k}{k!dt^k} c_n t^n \Bigg|_{t=0} \nonumber \\
+           &= \sum\limits_n \frac{1}{k!} \frac{n!}{(n-k)!} c_n t^{n-k} \Bigg|_{t=0} \nonumber \\
+           &= \sum\limits_n \frac{1}{k!} \frac{n!}{(n-k)!} c_n 0^{n-k} \nonumber \\
+           &= \sum\limits_{n=k} \frac{1}{k!} \frac{n!}{(n-k)!} c_n 0^{n-k} \nonumber \\
+           &= \frac{1}{k!} \frac{k!}{(k-k)!} c_k 0^{k-k} \nonumber \\
+           &= \frac{1}{k!} \frac{k!}{0!} c_k 0^0 \nonumber \\
+           &= c_k
+\end{align}
+$$
+
+
+Identities
+----------
+
+$$
+\begin{align}
+    g_{X}(1) = E[1^X] = 1
+\end{align}
+$$
+
+
+
 
 Dirac
 -----
