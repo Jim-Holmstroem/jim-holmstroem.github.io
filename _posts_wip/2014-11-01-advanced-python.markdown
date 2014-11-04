@@ -10,6 +10,7 @@ categories: python
 functions
 =========
 
+bind metrics to a function (python2 vs. python3)
 
 classes
 =======
