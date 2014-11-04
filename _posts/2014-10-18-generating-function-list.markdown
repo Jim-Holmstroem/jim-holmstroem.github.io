@@ -2,6 +2,7 @@
 layout: post
 title:  "List of generating functions"
 date:   2014-10-18 15:16:00
+comments: true
 categories: probability
 ---
 
