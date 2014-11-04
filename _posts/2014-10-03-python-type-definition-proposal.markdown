@@ -6,14 +6,14 @@ categories: python
 ---
 
 A proposal for Python type definition inspired by Haskells algebraic data types.
-To use the representative power of algebra to define types in Python.
+By using the representative power of algebra to define types in Python one attains
+a low clutter view of the composed types for variables/arguments and return types.
 
 It's not claiming to be able to represent any composed type (yet), but that is
 not the main goal of it.
 
 Usage
 -----
-
 Inline to aid the coming-back-next-month scenario
 
 ~~~ python
@@ -96,16 +96,16 @@ Tuple
 
 Sequence
 ========
-``[T]``: A _sequence_ with elements of type ``T``.
+``[E]``: A _sequence_ with elements of type ``E``.
 See note about sequences under "Work needed to be done".
 
 Set
 ===
-``{T}``: A _set_ with elements of type ``T``.
+``{E}``: A _set_ with elements of type ``E``.
 
 Dictionary
 ==========
-``{T1: T2}``: A _dictionary_ with keys of type ``T1`` and values of type ``T2``.
+``{K: V}``: A _dictionary_ with keys of type ``K`` and values of type ``V``.
 
 Grouping
 ========
@@ -120,7 +120,7 @@ Atomic
 
 ``int``: ``int``, ``types.IntType``.
 
-``float: ``float``, ``types.FloatType``.
+``float``: ``float``, ``types.FloatType``.
 
 ``str``: ``basestring``.
 
@@ -128,8 +128,8 @@ Atomic
 
 Polymorphic
 -----------
-``enumerate :: [T] -> [(count :: int, T)]`` Where T and the other T is of any
-but the same type. Could also be used for non-functions ``zip(a, a) :: [(T, T)]``
+``enumerate :: [T] -> [(count :: int, T)]`` Where ``T`` and the other ``T`` is of any
+and the same type. Could also be used for non-functions ``zip(a, a) :: [(T, T)]``
 
 Pragmatic usage
 ---------------
@@ -138,7 +138,7 @@ Stop with names instead of types all the way down
 
 Extensions to numpy datatypes
 -----------------------------
-Add the dimensions of the ndarray to, in Haskell the ``ndarray``
+Add the dimensions of the ndarray, in Haskell the ``ndarray``
 would be parameterized type.
 Either you have the parameters to be the size in integers
 (represented by a letter which in turn represents the dimension,
@@ -148,6 +148,7 @@ or the name of the dimension directly.
 ``timeseries :: ndarray(M, T)``
 
 ``timeseries :: ndarray(feature, time)``
+
 ``runs :: ndarray(run, feature, time)``
 
 It's much easier to verify by eye that you are by for example
@@ -159,38 +160,78 @@ actually getting the first feature for all runs and times.
 One could also add the ``dtype`` when it's a non-float64.
 ``timeseries_count :: ndarray(M, T, dtype=int)``
 
-Work needed to be done
-----------------------
-iterator/sequence/list (consumption)
-[]'
-
-multi line definitions, and haskell
-
 ~~~ python
-f :: T -> [T]
-    where T = [int]
+def features(data):
+    """description
+
+    Arguments
+    ---------
+    data :: ndarray(time)
+        description
+
+    Returns
+    -------
+    features :: ndarray(feature, time)
+        description
+
+    """
+
+    return ...
+
 ~~~
 
-ordereddict frozenset and other atomic like stuff?
+~~~ python
+def nan_feature_count(data):
+    """description
 
-str vs. basestring vs. u''
+    Arguments
+    ---------
+    data :: ndarray(feature, time)
+        description
 
-``(T1, T2) -> R`` vs. ``*(T1, T2) -> R``
-no argument function ( () -> int ambigous, use  ``-> int``)
-default arguments (+ arg=None defaults)
-multiple arguments
-vargs
-kwargs
-return "pass" (T -> None??)
-isinstance and type where you are supposed to use tuple with different dimensions, how to encode that?
+    Returns
+    -------
+    features :: ndarray(time, dtype=int)
+        description
 
-mark for side-effects
+    """
 
-grouping nothing vs. empty tuple
+    return ...
 
-Deal with ellipsis
-types.ClassType, types.TypeType
+~~~
 
+Work needed to be done
+----------------------
+
+Be able to define properties
+``bisect :: *(Sorted [T], T) -> (index :: int)``
+
+Handle the consumption difference between iterator and list (or if it doesn't matter)
+
+Be able to breakout common or long parts out of a definition
+
+~~~ python
+dict_utils.reduce :: *([D], reducer :: [V] -> V) -> D
+    where D = {K: V}
+~~~
+
+``ordereddict``, ``frozenset`` and other standard data types with properties.
+``Ordered {K: V}``, ``Frozen {E}``.
+
+Default arguments ``randint :: (seed :: int<0>) -> int``, default
+arguments with "Not set" i.e. ``None``.
+
+``*args``, ``**kwargs``
+
+For example ``isinstance`` and ``type`` where you are supposed to use a tuple
+with variable length. ``(T, ...)``
+
+A mark to differentiate pure (no side-effects) with unpure (side-effects).
+
+Deal with ``types.EllipsisType``, ``types.ClassType``, ``types.TypeType``
+
+if NaN is a possible value for numpy array
+``ndarray(feature|NaN, time)``.
 
 Type definition examples from the standard library
 --------------------------------------------------
@@ -200,6 +241,8 @@ Type definition examples from the standard library
 ``int :: int -> int``
 
 ``sorted :: [T] -> [T]``
+
+``sort :: [T] -> None``
 
 ``zip :: *([T1], ..., [Tn]) -> [(T1, ..., Tn)]``
 
@@ -233,5 +276,7 @@ def groupby(iterable, keyfunc=None):
 ~~~
 
 ``itertools.takewhile :: *((T -> bool), [T]) -> [T]``
+
 ``itertools.combinations :: *([T], repeat :: int) -> [(T, ...)]``
+
 ``reduce :: *(*(T, T) -> T, [T]) -> T``
