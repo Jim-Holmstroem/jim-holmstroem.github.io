@@ -5,21 +5,24 @@ date: 2014-11-03 10:51:26
 categories: python
 ---
 
-[WIP]
+A proposal for Python type definition inspired by Haskells algebraic data types.
+To use the representative power of algebra to define types in Python.
 
-A proposal for Python type definition inspired by Haskell.
+It's not claiming to be able to represent any composed type (yet), but that is
+not the main goal of it.
 
 Usage
 -----
 
-Inline to aid the comming-back-next-month scenario
+Inline to aid the coming-back-next-month scenario
 
 ~~~ python
 books = map(get_address_book, people)  # :: [{name :: str: number :: str}]
 alternative_books = map(get_address_book, people)  # :: [{str: str}]
 ~~~
 
-A deeper understanding of the datatype for the arguments and returned value
+A deeper understanding of the datatype for the arguments and returned value from
+the documentation.
 
 ~~~ python
 def foo(books):
@@ -61,7 +64,7 @@ def foo(books):
 ~~~
 
 Instead of thinking for your own, or writing it down in plain text in the
-documentation ``books is a list of integers`` you have a compact and stringent
+documentation ``n_books is a list of integers`` you have a compact and stringent
 way to write composed types that minimizes the mental clutter.
 
 Operators
@@ -80,7 +83,11 @@ An useful (and unfortunately common) use is ``T|None``, i.e. nullable.
 
 Function
 ========
-``T1 -> T2``: A _function_ which takes an element of type ``T1`` and returns ``T2``.
+``T -> R``: A _function_ which takes one argument of type ``T`` and
+returns a value of type ``R``.
+For other number of arguments 0 to n: ``-> R`` (or ``*() -> R``), ``T -> R`` (or ``*(T1, ) -> R``), ``*(T1, T2) -> R``,
+``*(T1, T2, ..., Tn) -> R``.
+The syntax for this is still under consideration, see notes on "Work needed to be done".
 
 Tuple
 =====
@@ -105,7 +112,7 @@ Grouping
 ``(T)``: Grouping works as in mathematics, the expression inside the grouping
 is evaluated first. Used for non-associative operations like ``->``.
 
-Example; decorator :: (T -> int) -> (T -> float)
+Example: ``decorator :: (T -> int) -> (T -> float)``
 
 Atomic
 ======
@@ -113,24 +120,44 @@ Atomic
 
 ``int``: ``int``, ``types.IntType``.
 
-``str``: ``basestring``
+``float: ``float``, ``types.FloatType``.
 
-``None``:  ``types.NoneType``
+``str``: ``basestring``.
+
+``None``:  ``types.NoneType``.
 
 Polymorphic
 -----------
 ``enumerate :: [T] -> [(count :: int, T)]`` Where T and the other T is of any
-but the same type.
+but the same type. Could also be used for non-functions ``zip(a, a) :: [(T, T)]``
 
 Pragmatic usage
 ---------------
 Stop with names instead of types all the way down
 ``service_hooks :: {service: [hook]}``, remember readability is key.
 
+Extensions to numpy datatypes
+-----------------------------
+Add the dimensions of the ndarray to, in Haskell the ``ndarray``
+would be parameterized type.
+Either you have the parameters to be the size in integers
+(represented by a letter which in turn represents the dimension,
+as often done in mathematics)
+or the name of the dimension directly.
 
-Extensions to numpy/pandas datatypes
-------------------------------------
+``timeseries :: ndarray(M, T)``
 
+``timeseries :: ndarray(feature, time)``
+``runs :: ndarray(run, feature, time)``
+
+It's much easier to verify by eye that you are by for example
+``np.sum(runs, axis=0)``
+actually summing all the runs, or by indexing
+``first_feature = runs[:, 0, :]``
+actually getting the first feature for all runs and times.
+
+One could also add the ``dtype`` when it's a non-float64.
+``timeseries_count :: ndarray(M, T, dtype=int)``
 
 Work needed to be done
 ----------------------
@@ -148,10 +175,63 @@ ordereddict frozenset and other atomic like stuff?
 
 str vs. basestring vs. u''
 
+``(T1, T2) -> R`` vs. ``*(T1, T2) -> R``
+no argument function ( () -> int ambigous, use  ``-> int``)
+default arguments (+ arg=None defaults)
+multiple arguments
+vargs
+kwargs
+return "pass" (T -> None??)
+isinstance and type where you are supposed to use tuple with different dimensions, how to encode that?
 
-Type examples from the standard library
----------------------------------------
+mark for side-effects
 
-int
-enumerate
-partial
+grouping nothing vs. empty tuple
+
+Deal with ellipsis
+types.ClassType, types.TypeType
+
+
+Type definition examples from the standard library
+--------------------------------------------------
+
+``enumerate :: [T] -> [(int, T)]``
+
+``int :: int -> int``
+
+``sorted :: [T] -> [T]``
+
+``zip :: *([T1], ..., [Tn]) -> [(T1, ..., Tn)]``
+
+``partial :: (T1 ... -> R) -> T1 -> (... -> R)``
+
+``all :: [T] -> bool``
+
+``chr :: int -> str``
+
+``cmp :: *(T, T) -> bool``
+
+~~~ python
+def groupby(iterable, keyfunc=None):
+    """groupby description is put here.
+
+    Arguments
+    ---------
+    iterable :: [T]
+        iterable description is put here.
+
+    keyfunc :: T -> K
+        keyfunc description is put here.
+
+    Returns
+    -------
+    grouping :: [(K, [T])]
+        grouping description is put here.
+
+    """
+
+~~~
+
+``itertools.takewhile :: *((T -> bool), [T]) -> [T]``
+``itertools.combinations :: *([T], repeat :: int) -> [(T, ...)]``
+``reduce :: *(*(T, T) -> T, [T]) -> T``
