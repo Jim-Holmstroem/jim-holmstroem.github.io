@@ -110,3 +110,52 @@ $$
                 & \Box
 \end{align}
 $$
+
+General case
+------------
+
+Conditioning of a general  multivariate normal distribution
+(thanks to <a href="https://github.com/jeanmn">Jean Alexander</a> for the hints).
+
+$$
+\begin{equation}
+    \begin{pmatrix}
+        X \\
+        Y
+    \end{pmatrix}
+    \sim N\left(
+        \begin{pmatrix}
+            \mu_X \\
+            \mu_Y
+        \end{pmatrix},
+        \begin{pmatrix}
+            \Sigma_{XX} & \Sigma_{XY} \\
+            \Sigma_{YX} & \Sigma_{YY}
+        \end{pmatrix}
+    \right)
+\end{equation}
+$$
+
+Both $X$ and $Y$ are in general multivariate normal distributions (since $(X, Y)$ are)
+Where the elements are actually blocks of the matrix but it is just another
+representation from what we normally use to be able to represent the conditioning
+explicitly with these symbols.
+
+Then we have that the general conditioning becomes (this will not be proved)
+
+$$
+\begin{equation}
+    Y|X \sim N\left(
+        \mu_Y + \Sigma_{YX}\Sigma_{XX}^{-1}\left(X-\mu_X\right),
+        \Sigma_{YY} - \Sigma_{YX}\Sigma_{XX}^{-1}\Sigma_{XY}
+    \right)
+\end{equation}
+$$
+
+Where the operation $A^{-1}$ is the generalized inverse and satisfies the
+condition $AA^{-1}A = A$. Note that if the matrix is invertible then the
+generalized inverse is just the ordinary matrix inversion.
+
+The source: [Gaussian Processes][general-case]
+
+[general-case]: http://www.stat.columbia.edu/~rdavis/papers/VAG002.pdf
