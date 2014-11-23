@@ -1,0 +1,319 @@
+---
+layout: post
+title: "np.sum(imap(identity, range(10))) weirdness"
+date: 2014-11-23 10:37:16
+categories: numpy
+---
+
+I stumbled on something rather unexpected in numpy the other day when I, lazy as
+I am, wrote an iterator using ``itertools`` and the code somewhere down the line
+tried to ``np.sum`` it.
+
+
+Dependencies
+------------
+I'm using ``numpy-1.9.1`` and ``python2.7``, I haven't looked this issue with other versions.
+
+
+Small Example
+-------------
+
+With ``identity = lambda x: x``, ``N_10 = range(10)`` we get
+
+|   | ``sum(.)``  | ``np.sum(.)``  |
+|---|:-:|:-:|
+| ``map(identity, N_10)`` | ``45``  | ``45`` |
+| ``imap(identity, N_10)``| ``45``  | ``<itertools.imap at 0x2c28610>`` |
+
+
+Down the rabbit hole
+--------------------
+
+It seems that it's not only the ``np.sum`` that posses this unintuitive behaviour
+with iterators, but also ``np.min``, ``np.max`` among others.
+
+I wrote some code to try all ``numpy`` functions with an iterator and see what
+happens.
+
+~~~ python
+from __future__ import print_function, division
+import numpy as np
+from itertools import *
+from functools import *
+import inspect
+
+it = lambda: imap(lambda x: x, range(10))
+def all_functions(module):
+    return filter(
+        inspect.isfunction,
+        map(
+            partial(getattr, module),
+            sorted(dir(module))
+        )
+    )
+
+fs = all_functions(np)
+
+def tryprint(a):
+    try:
+        print(a)
+    except:
+        pass
+
+def tryapply(f, g=it):
+    try:
+        return f, f(g())
+    except:
+        return f, "FAILED"
+
+not_failed = lambda (f, f_return): f_return != "FAILED"
+
+map(
+    tryprint,  # NOTE something returned didn't have a proper __repr__ (otherwise just print)
+    filter(
+        not_failed,
+        map(
+            tryapply,
+            fs
+        )
+    )
+)
+
+~~~
+
+The relevant output
+
+~~~ python
+(<function alen at 0x7fda5dd459b0>, 1)
+(<function all at 0x7fda5dd456e0>, <itertools.imap object at 0x7fda5b002210>)
+(<function alltrue at 0x7fda5dd455f0>, <itertools.imap object at 0x7fda5b002250>)
+(<function amax at 0x7fda5dd458c0>, <itertools.imap object at 0x7fda5b002310>)
+(<function amin at 0x7fda5dd45938>, <itertools.imap object at 0x7fda5b002390>)
+(<function any at 0x7fda5dd45668>, <itertools.imap object at 0x7fda5b0023d0>)
+(<function argmax at 0x7fda60d76e60>, 0)
+(<function argmin at 0x7fda60d76ed8>, 0)
+(<function argsort at 0x7fda60d76de8>, 0)
+(<function argwhere at 0x7fda60d6e848>, array([[0]]))
+(<function asanyarray at 0x7fda60d6e5f0>, array(<itertools.imap object at 0x7fda5b002450>, dtype=object))
+(<function asarray at 0x7fda60d6e578>, array(<itertools.imap object at 0x7fda5b002590>, dtype=object))
+(<function asarray_chkfinite at 0x7fda5d9b21b8>, array(<itertools.imap object at 0x7fda5b002610>, dtype=object))
+(<function ascontiguousarray at 0x7fda60d6e668>, array([<itertools.imap object at 0x7fda5b002690>], dtype=object))
+(<function asfortranarray at 0x7fda60d6e6e0>, array([<itertools.imap object at 0x7fda5b0026d0>], dtype=object))
+(<function asmatrix at 0x7fda5d9b38c0>, matrix([[<itertools.imap object at 0x7fda5b002790>]], dtype=object))
+(<function atleast_1d at 0x7fda5dd645f0>, array([<itertools.imap object at 0x7fda5b002890>], dtype=object))
+(<function atleast_2d at 0x7fda5dd64aa0>, array([[<itertools.imap object at 0x7fda5b002950>]], dtype=object))
+(<function atleast_3d at 0x7fda5dd64b18>, array([[[<itertools.imap object at 0x7fda5b0029d0>]]], dtype=object))
+(<function bmat at 0x7fda5d9b7938>, None)
+(<function broadcast_arrays at 0x7fda5d9b7aa0>, [array(<itertools.imap object at 0x7fda5b002a90>, dtype=object)])
+(<function column_stack at 0x7fda5d9bd5f0>, array([[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]))
+(<function copy at 0x7fda5d9b2320>, array(<itertools.imap object at 0x7fda5b002b50>, dtype=object))
+(<function cumprod at 0x7fda5dd45aa0>, array([<itertools.imap object at 0x7fda5b002c50>], dtype=object))
+(<function cumproduct at 0x7fda5dd457d0>, array([<itertools.imap object at 0x7fda5afae050>], dtype=object))
+(<function cumsum at 0x7fda5dd45758>, array([<itertools.imap object at 0x7fda5afae110>], dtype=object))
+(<function <lambda> at 0x7fda5d9a5578>, <numpy.lib.utils._Deprecate object at 0x7fda5afae210>)
+(<function diagflat at 0x7fda5d997aa0>, array([[<itertools.imap object at 0x7fda5afae290>]], dtype=object))
+(<function disp at 0x7fda5d9b28c0>, None)
+(<function dstack at 0x7fda5d9bd668>, array([[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]]))
+(<function get_array_wrap at 0x7fda5d9bda28>, None)
+(<function gradient at 0x7fda5d9b2398>, [])
+(<function hstack at 0x7fda5dd64c08>, array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
+(<function imag at 0x7fda5d991938>, array(0, dtype=object))
+(<function indices at 0x7fda5dd47de8>, array([], shape=(10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9), dtype=int64))
+(<function info at 0x7fda5d9a5848>, None)
+(<function iscomplex at 0x7fda5d9919b0>, False)
+(<function iscomplexobj at 0x7fda5d991aa0>, False)
+(<function isreal at 0x7fda5d991a28>, True)
+(<function isrealobj at 0x7fda5d991b18>, True)
+(<function isscalar at 0x7fda5dd47ed8>, False)
+(<function issctype at 0x7fda60d4a320>, False)
+(<function iterable at 0x7fda5d9a52a8>, 1)
+(<function loadtxt at 0x7fda5d77cd70>, (<function lookfor at 0x7fda5d9a5938>, None)
+(<function asmatrix at 0x7fda5d9b38c0>, matrix([[<itertools.imap object at 0x7fda5afae410>]], dtype=object))
+(<function amax at 0x7fda5dd458c0>, <itertools.imap object at 0x2f68c50>)
+(<function maximum_sctype at 0x7fda60d4a230>, <itertools.imap object at 0x2f68950>)
+(<function amin at 0x7fda5dd45938>, <itertools.imap object at 0x2f68250>)
+(<function mintypecode at 0x7fda5d9917d0>, 'd')
+(<function msort at 0x7fda5d9b3140>, array(<itertools.imap object at 0x2f68e90>, dtype=object))
+(<function nanargmax at 0x7fda5d9bac80>, 0)
+(<function nanargmin at 0x7fda5d9bac08>, 0)
+(<function nansum at 0x7fda5d9bacf8>, <itertools.imap object at 0x2f68f10>)
+(<function ndim at 0x7fda5dd45b18>, 0)
+(<function nonzero at 0x7fda5dd452a8>, (array([0]),))
+(<function obj2sctype at 0x7fda60d4a398>, None)
+(<function ones_like at 0x7fda60d6e398>, array(1, dtype=object))
+(<function prod at 0x7fda5dd45a28>, <itertools.imap object at 0x2f7b110>)
+(<function product at 0x7fda5dd45500>, <itertools.imap object at 0x2f7b410>)
+(<function rank at 0x7fda5dd45b90>, 0)
+(<function ravel at 0x7fda5dd45230>, array([<itertools.imap object at 0x2f7b610>], dtype=object))
+(<function real at 0x7fda5d9918c0>, array(<itertools.imap object at 0x2d2f0d0>, dtype=object))
+(<function real_if_close at 0x7fda5d991c80>, array(<itertools.imap object at 0x2d2f150>, dtype=object))
+(<function require at 0x7fda60d6e758>, array(<itertools.imap object at 0x2d2f190>, dtype=object))
+(<function vstack at 0x7fda5dd64b90>, array([[0],
+       [1],
+       [2],
+       [3],
+       [4],
+       [5],
+       [6],
+       [7],
+       [8],
+       [9]]))
+(<function set_printoptions at 0x7fda5dd45f50>, None)
+(<function shape at 0x7fda5dd45320>, ())
+(<function size at 0x7fda5dd45c08>, 1)
+(<function sometrue at 0x7fda5dd45578>, <itertools.imap object at 0x2d2f410>)
+(<function sort at 0x7fda60d76d70>, array(<itertools.imap object at 0x33a7890>, dtype=object))
+(<function source at 0x7fda5d9a58c0>, None)
+(<function squeeze at 0x7fda5dd450c8>, array(<itertools.imap object at 0x30cbd90>, dtype=object))
+(<function sum at 0x7fda5dd45488>, <itertools.imap object at 0x3026d90>)
+(<function transpose at 0x7fda60d76c08>, array(<itertools.imap object at 0x3026d10>, dtype=object))
+(<function unique at 0x7fda5d753c08>, array([<itertools.imap object at 0x3026bd0>], dtype=object))
+(<function vstack at 0x7fda5dd64b90>, array([[0],
+       [1],
+       [2],
+       [3],
+       [4],
+       [5],
+       [6],
+       [7],
+       [8],
+       [9]]))
+(<function zeros_like at 0x7fda60d6e2a8>, array(0, dtype=object))
+
+~~~
+
+Grouping by "type" and filtering out the irrelevant functions
+
+Passthrough
+-----------
+~~~ python
+(<function all at 0x7fda5dd456e0>, <itertools.imap object at 0x7fda5b002210>)
+(<function alltrue at 0x7fda5dd455f0>, <itertools.imap object at 0x7fda5b002250>)
+(<function amax at 0x7fda5dd458c0>, <itertools.imap object at 0x7fda5b002310>)
+(<function amin at 0x7fda5dd45938>, <itertools.imap object at 0x7fda5b002390>)
+(<function any at 0x7fda5dd45668>, <itertools.imap object at 0x7fda5b0023d0>)
+(<function amax at 0x7fda5dd458c0>, <itertools.imap object at 0x2f68c50>)
+(<function maximum_sctype at 0x7fda60d4a230>, <itertools.imap object at 0x2f68950>)
+(<function amin at 0x7fda5dd45938>, <itertools.imap object at 0x2f68250>)
+(<function nansum at 0x7fda5d9bacf8>, <itertools.imap object at 0x2f68f10>)
+(<function prod at 0x7fda5dd45a28>, <itertools.imap object at 0x2f7b110>)
+(<function product at 0x7fda5dd45500>, <itertools.imap object at 0x2f7b410>)
+(<function sometrue at 0x7fda5dd45578>, <itertools.imap object at 0x2d2f410>)
+(<function sum at 0x7fda5dd45488>, <itertools.imap object at 0x3026d90>)
+
+~~~
+
+Number
+------
+~~~ python
+(<function argmax at 0x7fda60d76e60>, 0)
+(<function argmin at 0x7fda60d76ed8>, 0)
+(<function argsort at 0x7fda60d76de8>, 0)
+(<function nanargmax at 0x7fda5d9bac80>, 0)
+(<function nanargmin at 0x7fda5d9bac08>, 0)
+(<function rank at 0x7fda5dd45b90>, 0)
+
+~~~
+
+Boolean
+-------
+~~~ python
+(<function iscomplex at 0x7fda5d9919b0>, False)
+(<function iscomplexobj at 0x7fda5d991aa0>, False)
+(<function isreal at 0x7fda5d991a28>, True)
+(<function isrealobj at 0x7fda5d991b18>, True)
+(<function isscalar at 0x7fda5dd47ed8>, False)
+(<function issctype at 0x7fda60d4a320>, False)
+(<function iterable at 0x7fda5d9a52a8>, 1)
+
+~~~
+
+Where ``iterable`` should be ``isiterable`` and have a boolean codomain.
+
+Shape
+-----
+~~~ python
+(<function alen at 0x7fda5dd459b0>, 1)
+(<function ndim at 0x7fda5dd45b18>, 0)
+(<function shape at 0x7fda5dd45320>, ())
+(<function size at 0x7fda5dd45c08>, 1)
+
+~~~
+
+Cumulation
+----------
+~~~ python
+(<function cumprod at 0x7fda5dd45aa0>, array([<itertools.imap object at 0x7fda5b002c50>], dtype=object))
+(<function cumproduct at 0x7fda5dd457d0>, array([<itertools.imap object at 0x7fda5afae050>], dtype=object))
+(<function cumsum at 0x7fda5dd45758>, array([<itertools.imap object at 0x7fda5afae110>], dtype=object))
+(<function gradient at 0x7fda5d9b2398>, [])
+
+~~~
+
+~~~ python
+(<function argwhere at 0x7fda60d6e848>, array([[0]]))
+(<function asanyarray at 0x7fda60d6e5f0>, array(<itertools.imap object at 0x7fda5b002450>, dtype=object))
+(<function asarray at 0x7fda60d6e578>, array(<itertools.imap object at 0x7fda5b002590>, dtype=object))
+(<function asarray_chkfinite at 0x7fda5d9b21b8>, array(<itertools.imap object at 0x7fda5b002610>, dtype=object))
+(<function ascontiguousarray at 0x7fda60d6e668>, array([<itertools.imap object at 0x7fda5b002690>], dtype=object))
+(<function asfortranarray at 0x7fda60d6e6e0>, array([<itertools.imap object at 0x7fda5b0026d0>], dtype=object))
+(<function asmatrix at 0x7fda5d9b38c0>, matrix([[<itertools.imap object at 0x7fda5b002790>]], dtype=object))
+(<function atleast_1d at 0x7fda5dd645f0>, array([<itertools.imap object at 0x7fda5b002890>], dtype=object))
+(<function atleast_2d at 0x7fda5dd64aa0>, array([[<itertools.imap object at 0x7fda5b002950>]], dtype=object))
+(<function atleast_3d at 0x7fda5dd64b18>, array([[[<itertools.imap object at 0x7fda5b0029d0>]]], dtype=object))
+(<function broadcast_arrays at 0x7fda5d9b7aa0>, [array(<itertools.imap object at 0x7fda5b002a90>, dtype=object)])
+(<function column_stack at 0x7fda5d9bd5f0>, array([[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]))
+(<function copy at 0x7fda5d9b2320>, array(<itertools.imap object at 0x7fda5b002b50>, dtype=object))
+(<function <lambda> at 0x7fda5d9a5578>, <numpy.lib.utils._Deprecate object at 0x7fda5afae210>)
+(<function diagflat at 0x7fda5d997aa0>, array([[<itertools.imap object at 0x7fda5afae290>]], dtype=object))
+(<function dstack at 0x7fda5d9bd668>, array([[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]]))
+(<function hstack at 0x7fda5dd64c08>, array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
+(<function imag at 0x7fda5d991938>, array(0, dtype=object))
+(<function indices at 0x7fda5dd47de8>, array([], shape=(10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9), dtype=int64))
+(<function asmatrix at 0x7fda5d9b38c0>, matrix([[<itertools.imap object at 0x7fda5afae410>]], dtype=object))
+(<function msort at 0x7fda5d9b3140>, array(<itertools.imap object at 0x2f68e90>, dtype=object))
+(<function nonzero at 0x7fda5dd452a8>, (array([0]),))
+(<function ones_like at 0x7fda60d6e398>, array(1, dtype=object))
+(<function ravel at 0x7fda5dd45230>, array([<itertools.imap object at 0x2f7b610>], dtype=object))
+(<function real at 0x7fda5d9918c0>, array(<itertools.imap object at 0x2d2f0d0>, dtype=object))
+(<function real_if_close at 0x7fda5d991c80>, array(<itertools.imap object at 0x2d2f150>, dtype=object))
+(<function require at 0x7fda60d6e758>, array(<itertools.imap object at 0x2d2f190>, dtype=object))
+(<function vstack at 0x7fda5dd64b90>, array([[0],
+       [1],
+       [2],
+       [3],
+       [4],
+       [5],
+       [6],
+       [7],
+       [8],
+       [9]]))
+(<function sort at 0x7fda60d76d70>, array(<itertools.imap object at 0x33a7890>, dtype=object))
+(<function squeeze at 0x7fda5dd450c8>, array(<itertools.imap object at 0x30cbd90>, dtype=object))
+(<function transpose at 0x7fda60d76c08>, array(<itertools.imap object at 0x3026d10>, dtype=object))
+(<function unique at 0x7fda5d753c08>, array([<itertools.imap object at 0x3026bd0>], dtype=object))
+(<function vstack at 0x7fda5dd64b90>, array([[0],
+       [1],
+       [2],
+       [3],
+       [4],
+       [5],
+       [6],
+       [7],
+       [8],
+       [9]]))
+(<function zeros_like at 0x7fda60d6e2a8>, array(0, dtype=object))
+
+~~~
+
+A clue
+------
+
+``np.array(it())`` returns ``array(<itertools.imap object at 0x2f45490>, dtype=object)``
+
+http://stackoverflow.com/questions/16426547/numpy-all-with-integer-arguments-returns-an-integer
+
+
+Summary
+-------
+Contract of return type in documentation not guaranteed.
