@@ -250,8 +250,18 @@ Cumulation
 
 ~~~
 
+Complex
+-------
 ~~~ python
-(<function argwhere at 0x7fda60d6e848>, array([[0]]))
+(<function imag at 0x7fda5d991938>, array(0, dtype=object))
+(<function real at 0x7fda5d9918c0>, array(<itertools.imap object at 0x2d2f0d0>, dtype=object))
+(<function real_if_close at 0x7fda5d991c80>, array(<itertools.imap object at 0x2d2f150>, dtype=object))
+
+~~~
+
+Array with ``dtype=imap``
+-------------------------
+~~~ python
 (<function asanyarray at 0x7fda60d6e5f0>, array(<itertools.imap object at 0x7fda5b002450>, dtype=object))
 (<function asarray at 0x7fda60d6e578>, array(<itertools.imap object at 0x7fda5b002590>, dtype=object))
 (<function asarray_chkfinite at 0x7fda5d9b21b8>, array(<itertools.imap object at 0x7fda5b002610>, dtype=object))
@@ -262,22 +272,29 @@ Cumulation
 (<function atleast_2d at 0x7fda5dd64aa0>, array([[<itertools.imap object at 0x7fda5b002950>]], dtype=object))
 (<function atleast_3d at 0x7fda5dd64b18>, array([[[<itertools.imap object at 0x7fda5b0029d0>]]], dtype=object))
 (<function broadcast_arrays at 0x7fda5d9b7aa0>, [array(<itertools.imap object at 0x7fda5b002a90>, dtype=object)])
-(<function column_stack at 0x7fda5d9bd5f0>, array([[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]))
 (<function copy at 0x7fda5d9b2320>, array(<itertools.imap object at 0x7fda5b002b50>, dtype=object))
-(<function <lambda> at 0x7fda5d9a5578>, <numpy.lib.utils._Deprecate object at 0x7fda5afae210>)
 (<function diagflat at 0x7fda5d997aa0>, array([[<itertools.imap object at 0x7fda5afae290>]], dtype=object))
-(<function dstack at 0x7fda5d9bd668>, array([[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]]))
-(<function hstack at 0x7fda5dd64c08>, array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
-(<function imag at 0x7fda5d991938>, array(0, dtype=object))
-(<function indices at 0x7fda5dd47de8>, array([], shape=(10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9), dtype=int64))
 (<function asmatrix at 0x7fda5d9b38c0>, matrix([[<itertools.imap object at 0x7fda5afae410>]], dtype=object))
 (<function msort at 0x7fda5d9b3140>, array(<itertools.imap object at 0x2f68e90>, dtype=object))
+(<function ravel at 0x7fda5dd45230>, array([<itertools.imap object at 0x2f7b610>], dtype=object))
+(<function require at 0x7fda60d6e758>, array(<itertools.imap object at 0x2d2f190>, dtype=object))
+(<function sort at 0x7fda60d76d70>, array(<itertools.imap object at 0x33a7890>, dtype=object))
+(<function squeeze at 0x7fda5dd450c8>, array(<itertools.imap object at 0x30cbd90>, dtype=object))
+(<function transpose at 0x7fda60d76c08>, array(<itertools.imap object at 0x3026d10>, dtype=object))
+(<function unique at 0x7fda5d753c08>, array([<itertools.imap object at 0x3026bd0>], dtype=object))
+
+~~~
+
+Array with ``dtype=number``
+---------------------------
+~~~ python
+(<function argwhere at 0x7fda60d6e848>, array([[0]]))
+(<function column_stack at 0x7fda5d9bd5f0>, array([[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]))
+(<function dstack at 0x7fda5d9bd668>, array([[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]]]))
+(<function hstack at 0x7fda5dd64c08>, array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
+(<function indices at 0x7fda5dd47de8>, array([], shape=(10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9), dtype=int64))
 (<function nonzero at 0x7fda5dd452a8>, (array([0]),))
 (<function ones_like at 0x7fda60d6e398>, array(1, dtype=object))
-(<function ravel at 0x7fda5dd45230>, array([<itertools.imap object at 0x2f7b610>], dtype=object))
-(<function real at 0x7fda5d9918c0>, array(<itertools.imap object at 0x2d2f0d0>, dtype=object))
-(<function real_if_close at 0x7fda5d991c80>, array(<itertools.imap object at 0x2d2f150>, dtype=object))
-(<function require at 0x7fda60d6e758>, array(<itertools.imap object at 0x2d2f190>, dtype=object))
 (<function vstack at 0x7fda5dd64b90>, array([[0],
        [1],
        [2],
@@ -288,10 +305,6 @@ Cumulation
        [7],
        [8],
        [9]]))
-(<function sort at 0x7fda60d76d70>, array(<itertools.imap object at 0x33a7890>, dtype=object))
-(<function squeeze at 0x7fda5dd450c8>, array(<itertools.imap object at 0x30cbd90>, dtype=object))
-(<function transpose at 0x7fda60d76c08>, array(<itertools.imap object at 0x3026d10>, dtype=object))
-(<function unique at 0x7fda5d753c08>, array([<itertools.imap object at 0x3026bd0>], dtype=object))
 (<function vstack at 0x7fda5dd64b90>, array([[0],
        [1],
        [2],
