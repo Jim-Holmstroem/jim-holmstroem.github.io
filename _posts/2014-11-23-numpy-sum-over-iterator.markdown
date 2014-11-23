@@ -86,6 +86,21 @@ The relevant output:
 
 Grouping by "type" and filtering out the irrelevant functions
 
+Shape
+-----
+~~~ python
+(<function alen at 0x7fda5dd459b0>, 1)
+(<function ndim at 0x7fda5dd45b18>, 0)
+(<function shape at 0x7fda5dd45320>, ())
+(<function size at 0x7fda5dd45c08>, 1)
+
+~~~
+
+The problem probably originates from the shape of the iterator being interpreted
+as ``np.shape(imap(.)) = ()`` i.e. the degenerate case of ``np.ndarray``. This
+similarly to ``np.array(0)``. Whould have been more expected if it was interpreted
+as a python list.
+
 Passthrough
 -----------
 ~~~ python
@@ -104,6 +119,7 @@ Passthrough
 (<function sum at 0x7fda5dd45488>, <itertools.imap object at 0x3026d90>)
 
 ~~~
+
 
 Number
 ------
@@ -131,16 +147,6 @@ Boolean
 ~~~
 
 Where ``iterable`` should be ``isiterable`` and have a boolean codomain.
-
-Shape
------
-~~~ python
-(<function alen at 0x7fda5dd459b0>, 1)
-(<function ndim at 0x7fda5dd45b18>, 0)
-(<function shape at 0x7fda5dd45320>, ())
-(<function size at 0x7fda5dd45c08>, 1)
-
-~~~
 
 Cumulation
 ----------
