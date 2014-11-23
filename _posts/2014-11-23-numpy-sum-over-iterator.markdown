@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "np.sum(imap(identity, range(10))) weirdness"
+title: "Iterator as argument in numpy weirdness"
 date: 2014-11-23 10:37:16
 categories: numpy
 ---
@@ -21,7 +21,7 @@ Small Example
 With ``identity = lambda x: x``, ``N_10 = range(10)`` we get
 
 |   | ``sum(.)``  | ``np.sum(.)``  |
-|---|:-:|:-:|
+|:-:|:-:|:-:|
 | ``map(identity, N_10)`` | ``45``  | ``45`` |
 | ``imap(identity, N_10)``| ``45``  | ``<itertools.imap at 0x2c28610>`` |
 
@@ -98,10 +98,10 @@ Shape
 
 The problem probably originates from the shape of the iterator being interpreted
 as ``np.shape(imap(.)) = ()`` i.e. the degenerate case of ``np.ndarray``. This
-similarly to ``np.array(0)``. Whould have been more expected if it was interpreted
+similarly to ``np.array(0)``. Would have been more expected if it was interpreted
 as a python list.
 
-Passthrough
+Pass-through
 -----------
 ~~~ python
 (<function all at 0x7fda5dd456e0>, <itertools.imap object at 0x7fda5b002210>)
@@ -124,7 +124,7 @@ By the looks of it the degenerate case isn't handled properly.
 The ``all`` and ``any``-family is working better than in ``numpy-1.8`` and handles integers properly (but not iterators, even if we would interpret it as an object)
 [stackoverflow question](http://stackoverflow.com/questions/16426547/numpy-all-with-integer-arguments-returns-an-integer)
 
-``reduce(op, .)``-family (which is all passthroughs except sctype) propably has a special case for the degenerate case (being identity).
+``reduce(op, .)``-family (which is all pass-through's except sctype) probably has a special case for the degenerate case (being identity).
 They should act the same in the degenerate case going from ``((id(op) op a_0) op a_1)...`` to ``id(op) op a_0``.
 Where ``id(op)`` is the identity element of the group ``<R, op>``. If this would have been the case the
 application of an iterator would fail (which is better).
@@ -144,7 +144,7 @@ Number
 
 ~~~
 
-``arg*``-family propably has a special case for the degenerate case.
+``arg*``-family probably has a special case for the degenerate case.
 ``arg*`` doesn't make much sense in the degenerate case, compare ``np.argmax(4, axis=0)`` with ``np.argmax([4], axis=0)``.
 The degenerate's index-space is zero-dimensional so it should return ``()`` additionally it doesn't even have an axis (not even ``axis=0``).
 
@@ -189,7 +189,8 @@ Complex
 
 ~~~
 
-This behaviour is really unintuitive and probably is caused by ``isreal``'s unintuitive behaviour.
+This behaviour is really unintuitive and probably originates from
+``isreal``'s unintuitive behaviour.
 
 
 Array with ``dtype=imap``
@@ -269,10 +270,11 @@ Summary
 ------
 
 ``np.array(it())`` returns ``array(<itertools.imap object at 0x2f45490>, dtype=object)``
+and are thereby handling the iterator as a degenerate case instead of consuming it.
 
-Contract of return type in documentation not guaranteed.
+Contract for the return type in documentation is not guaranteed in many cases for iterators as input.
 
 Note
 ----
-Realized when I was done that some functions wheren't registering as functions by ``inspection.isfunction``,
-one exapmle being ``np.minimum``. I should (if I have the time to) redo this analysis.
+Realized when I was done that some functions weren't registering as functions by ``inspection.isfunction``,
+one example being ``np.minimum``. I should (if I have the time to) redo this analysis.
