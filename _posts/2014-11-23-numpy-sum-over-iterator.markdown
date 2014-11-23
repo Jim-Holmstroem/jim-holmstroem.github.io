@@ -111,7 +111,6 @@ Passthrough
 (<function any at 0x7fda5dd45668>, <itertools.imap object at 0x7fda5b0023d0>)
 (<function amax at 0x7fda5dd458c0>, <itertools.imap object at 0x2f68c50>)
 (<function maximum_sctype at 0x7fda60d4a230>, <itertools.imap object at 0x2f68950>)
-(<function amin at 0x7fda5dd45938>, <itertools.imap object at 0x2f68250>)
 (<function nansum at 0x7fda5d9bacf8>, <itertools.imap object at 0x2f68f10>)
 (<function prod at 0x7fda5dd45a28>, <itertools.imap object at 0x2f7b110>)
 (<function product at 0x7fda5dd45500>, <itertools.imap object at 0x2f7b410>)
@@ -119,6 +118,18 @@ Passthrough
 (<function sum at 0x7fda5dd45488>, <itertools.imap object at 0x3026d90>)
 
 ~~~
+
+By the looks of it the degenerate case isn't handled properly.
+
+The ``all`` and ``any``-family is working better than in ``numpy-1.8`` and handles integers properly (but not iterators, even if we would interpret it as an object)
+[stackoverflow question](http://stackoverflow.com/questions/16426547/numpy-all-with-integer-arguments-returns-an-integer)
+
+``reduce(op, .)``-family (which is all passthroughs except sctype) propably has a special case for the degenerate case (being identity).
+They should act the same in the degenerate case going from ``((id(op) op a_0) op a_1)...`` to ``id(op) op a_0``.
+Where ``id(op)`` is the identity element of the group ``<R, op>``. If this would have been the case the
+application of an iterator would fail (which is better).
+
+``maximum_sctype`` does not return a type.
 
 
 Number
@@ -133,6 +144,12 @@ Number
 
 ~~~
 
+``arg*``-family propably has a special case for the degenerate case.
+``arg*`` doesn't make much sense in the degenerate case, compare ``np.argmax(4, axis=0)`` with ``np.argmax([4], axis=0)``.
+The degenerate's index-space is zero-dimensional so it should return ``()`` additionally it doesn't even have an axis (not even ``axis=0``).
+
+No comment on ``rank``.
+
 Boolean
 -------
 ~~~ python
@@ -146,7 +163,9 @@ Boolean
 
 ~~~
 
-Where ``iterable`` should be ``isiterable`` and have a boolean codomain.
+What constitutes something to be ``real`` or ``realobj``? If ``imap`` is interpreted as an object it's not real (otherwise it is (in this case)).
+
+Off-topic: ``iterable`` should be ``isiterable`` and have a boolean codomain.
 
 Cumulation
 ----------
@@ -158,6 +177,9 @@ Cumulation
 
 ~~~
 
+``gradient`` is interpreting the ``imap`` as an object.
+The ``cumop``-family has the same issues as ``reduce(op, .)``.
+
 Complex
 -------
 ~~~ python
@@ -166,6 +188,9 @@ Complex
 (<function real_if_close at 0x7fda5d991c80>, array(<itertools.imap object at 0x2d2f150>, dtype=object))
 
 ~~~
+
+This behaviour is really unintuitive and probably is caused by ``isreal``'s unintuitive behaviour.
+
 
 Array with ``dtype=imap``
 -------------------------
@@ -192,6 +217,10 @@ Array with ``dtype=imap``
 (<function unique at 0x7fda5d753c08>, array([<itertools.imap object at 0x3026bd0>], dtype=object))
 
 ~~~
+
+All of these functions is handling ``imap`` as an object and therefor operating as the degenerate case.
+For some of which the degenerate case is unintuitive in itself.
+
 
 Array with ``dtype=number``
 ---------------------------
@@ -227,14 +256,23 @@ Array with ``dtype=number``
 
 ~~~
 
-A clue
+``argwhere`` and ``nonzero`` is handling it as the degenerate case.
+
+``*_like``-family is handling it as the degenerate case.
+
+The ``stack``-family works as one should expect (if ``imap`` is interpreted as an list).
+
+``indices`` is iterating through the iterator interpreting it as a list, however is this
+case compared to (all?) other the argument isn't data but instead a list of index dimensions.
+
+Summary
 ------
 
 ``np.array(it())`` returns ``array(<itertools.imap object at 0x2f45490>, dtype=object)``
 
-http://stackoverflow.com/questions/16426547/numpy-all-with-integer-arguments-returns-an-integer
-
-
-Summary
--------
 Contract of return type in documentation not guaranteed.
+
+Note
+----
+Realized when I was done that some functions wheren't registering as functions by ``inspection.isfunction``,
+one exapmle being ``np.minimum``. I should (if I have the time to) redo this analysis.
