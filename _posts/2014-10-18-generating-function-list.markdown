@@ -10,7 +10,6 @@ so I started compiling my own.
 (They will be filled in as they appear in the wild)
 
 
-
 Definition
 ----------
 
@@ -108,8 +107,6 @@ $$
 $$
 
 
-
-
 Dirac
 -----
 
@@ -120,6 +117,7 @@ $$
                      &= t^a
 \end{align}
 $$
+
 
 Poission
 --------
@@ -133,6 +131,7 @@ $$
                         &= (e^{t-1})^m = e^{m(t-1)}
 \end{align}
 $$
+
 
 Binomial
 --------
@@ -169,6 +168,7 @@ $$
 \end{align}
 $$
 
+
 First Success
 ------------
 
@@ -183,3 +183,9 @@ $$
                         &= \frac{pt}{1-(1-p)t},\quad |(1-p)t|<1
 \end{align}
 $$
+
+
+<!---
+Add this F_{max{X_i}}(y) = g_N(F_X(y)):
+http://www.math.kth.se/matstat/gru/sf2940/5-8-1-Ex5.pdf
+-->
