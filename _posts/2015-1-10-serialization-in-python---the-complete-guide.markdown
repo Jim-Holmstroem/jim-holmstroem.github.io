@@ -28,9 +28,8 @@ id = lambda x: loads(dumps(x))
 unpickable = lambda x: x
 ~~~
 
-``cPickle`` is an optimized pickler module in python and
-I think ``cPickle`` is one of the most commonly used pickler in data science,
-but this guide shouldn't be bound to ``cPickle`` but I make no guarantees if
+``cPickle`` is an optimized and commonly used pickle module in python
+but this guide shouldn't be bound to ``cPickle`` but it makes no guarantees if
 you are using the default ``pickle`` module or any other pickler.
 
 We will also be using [numpy](http://www.numpy.org/) and [pandas](http://pandas.pydata.org/)
@@ -43,7 +42,11 @@ correctly on the other side.
 
 ``unpickable`` will be used as an unpickable object for demonstration purposes.
 
-Also I will use ``python-2.7``
+This guide will use ``python-2.7``.
+
+Note that the expression to be tested through loaddump will mostly just be
+stated and it is up to the read to run it through ``loaddump``. This is due to
+brevity.
 
 Instances of Built-in Types
 ---------------------------
@@ -52,25 +55,53 @@ Instances of built-in
 * [numeric](https://docs.python.org/2/library/stdtypes.html#numeric-types-int-float-long-complex)
 * [sequence](https://docs.python.org/2/library/stdtypes.html#sequence-types-str-unicode-list-tuple-bytearray-buffer-xrange)
 * [set](https://docs.python.org/2/library/stdtypes.html#set-types-set-frozenset)
-* [text sequence]()
-* [mapping]()
-
--types is supported.
-
-For example
+* [mapping](https://docs.python.org/2/library/stdtypes.html#mapping-types-dict)
+ is supported.
 
 ~~~python
-
+1
+1.0
+complex(1, 1)
+'test'
+u'test'
+[1, 2, 3]
+(1, 2, 3)
+bytearray(1024)
+xrange(16)
+{1}
+frozenset({1})
+{1: 1}
 ~~~
+
+Except for ``buffer`` and ``memoryview`` objects
+
+~~~python
+buffer(bytearray(1024), 0, 16)
+loaddump(memoryview(bytearray(1024)))
+~~~
+
+TODO why is this reasonable?
+
+Note that all instances of sequence type will recursivly serialize all the elements
+and thus all the elements must be pickable.
+
+Iterators
+---------
 
 Modules
 -------
+TODO these are by full name (as a few other things, for example functions but we will come back to those later)
 
 Classes
 -------
 
+
 Class Instances
 ---------------
+All attributes needs to be pickable.
+
+see get/setstate later to see how to override this behaviour or just to see how
+it works under the hood. TODO proper name of get/setstate
 
 Functions
 ---------
@@ -112,9 +143,11 @@ def twice(f):
 ~~~
 
 and it is used liked this, to hash 1337 twice:
+
 ~~~python
 twice(hash)(1337)
 ~~~
+
 However ``twice(hash)`` is not pickable even if ``hash`` is, this is because
 ``twice(hash)`` is an ``f_twice`` with the ``f`` in the expression
 ``return f(f(x))`` fixed (it is in the functions so called _closure_) to ``hash``.
@@ -123,6 +156,7 @@ This is due to that ``f_twice`` is out of scope, i.e. there
 is no name for it outside the scope of ``twice``.
 
 How to fix it:
+
 ~~~python
 class twice(object):
     def __init__(self, f):
@@ -130,17 +164,39 @@ class twice(object):
     def __call__(self, x):
         return self.f(self.f(x))
 ~~~
+
 It works as long as ``f`` is serializable, but the function ``twice`` looks
 much better and has less boilerplate then the class ``twice``.
+
+One can do something similar by returning classes (not as common but occurs from
+time to time):
+
+~~~python
+def f(t):
+    class A(object):
+        def f(self):
+            return t
+    return A
+~~~
+
+It is basically the same problem for ``f(t)`` and the same solution.
+This is very much related to ``Metaclasses``.
+
+Metaclasses
+-----------
+Works the same way as for classes, since it is classes for classes.
+TODO try it!!
 
 Files
 -----
 
+Miscellaneous
+-------------
+type
+None
+Ellipsis
 memoryviews
------------
-
 contextmanagers
----------------
 
 
 Dealing with Injection
@@ -212,6 +268,26 @@ Override the pickling
 
 get/setstate
 
+
+Ensuring picklability
+---------------------
+
+Always have something like this in your tests
+
+~~~python
+from nose.tools import assert_equal
+def test_loaddump(o):
+assert_equal(
+    loaddump(o),
+    o
+)
+~~~
+
+It does not catch everything but it is better than nothing.
+
+Remark: make  sure that the equals operator is always fully implemented and
+that two objects with different state (except for ``id()`` and such ofc) cannot
+be equal.
 
 Serialization problems with big libraries
 -----------------------------------------
