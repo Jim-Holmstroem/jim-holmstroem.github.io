@@ -103,6 +103,8 @@ All attributes needs to be pickable.
 see get/setstate later to see how to override this behaviour or just to see how
 it works under the hood. TODO proper name of get/setstate
 
+TODO reference to how it does default.
+
 Functions
 ---------
 
@@ -266,8 +268,135 @@ TODO! dig deeper into this
 Override the pickling
 ---------------------
 
-get/setstate
+* ``__getstate__`` returns a pickable object representing the state
+* ``__setstate__`` receives the above object and reconstructs the state from it
 
+TODO example which isn't pickable but can be made so via get/set
+
+
+Proposal to pickle simple lambdas
+---------------------------------
+
+~~~python
+from collections import namedtuple
+from types import LambdaType, CodeType
+
+class Code(object):
+    State = namedtuple(
+        'State',
+        (
+            'argcount',
+            'nlocals',
+            'stacksize',
+            'flags',
+            'codestring',
+            'constants',
+            'names',
+            'varnames',
+            'filename',
+            'name',
+            'firstlineno',
+            'lnotab',
+        )
+    )
+    def __init__(self, code):
+        self.code = code
+
+    def __getatttr__(self, name):
+        return getattr(self.code, name)
+
+    def __getstate__(self):
+        state = Code.State(
+            argcount=self.co_argcount,
+            nlocals=self.co_nlocals,
+            stacksize=self.co_stacksize,
+            flags=self.co_flags,
+            codestring=self.co_code,
+            constants=self.co_consts,
+            names=self.co_names,
+            varnames=self.varnames,
+            filename=self.co_filename,
+            name=self.co_name,
+            firstlineno=self.co_firstlineno,
+            lnotab=self.co_lnotab,
+        )
+
+        return state
+
+    def __setstate__(self, state):
+        self.code = types.CodeType(
+            argcount=state.argcount,
+            nlocals=state.nlocals,
+            stacksize=state.stacksize,
+            flags=state.flags,
+            codestring=state.codestring,
+            constants=state.constants,
+            names=state.names,
+            varnames=state.varnames,
+            filename=state.filename,
+            name=state.name,
+            firstlineno=state.firstlineno,
+            lnotab=state.lnotab,
+            freevars=(),  # TODO are these needed for np/pd to work?
+            cellvars=(),
+        )
+
+class Lambda(object):
+    State = namedtuple(
+        'State',
+        (
+            'code',
+            'name',
+            'argdefs',
+            'context',
+        )
+    )
+
+    def __init__(self, lambda_, context={}):
+        self.lambda_ = lambda_
+        self.context = context
+
+    def __getatttr__(self, name):
+        return getattr(self.lambda_, name)
+
+    def __getstate__(self):
+        state = Lambda.State(
+            code=Code(self.func_code),
+            name=self.func_name,
+            argdefs=self.func_defaults,
+            context=self.context,
+        )
+
+        return state
+
+    def __setstate__(self, state):
+        self._lambda = types.LambdaType(
+            code=state.code,
+            globals=state.context,
+            name=state.name,
+            argdefs=state.argdefs,
+            closure=None,  # TODO is this needed for np/pd to work?
+        )
+
+Lambda(lambda x: x)
+~~~
+
+TODO test the above code!!
+
+The above code is two fully transparent wrappers for ``code`` and ``lambda``-objects which
+are (in simpler cases) pickleable despite ``code`` and ``lambda``-objects in themself
+not being so by design choice.
+The boilerplate code is mainly because some of the initialization arguments
+are not named as their corresponding attributes
+(``constants/consts`` ``argdef/defaults`` ``codestring/code``)
+
+
+TODO "does not support variables defined outside the block"
+how does it support np.mean(x-x.mean()) (np global in this)
+Lambda.__init__(self, lambda_, context={'np': np, 'pd', pd}):  # will it be necessary to have commonly used modules like this (in other words are they considered "global", verify
+
+Note that if we would include global then everything in ``globals()``
+(the global scope) must be pickable which seldom is the case.
 
 Ensuring picklability
 ---------------------
@@ -289,14 +418,31 @@ Remark: make  sure that the equals operator is always fully implemented and
 that two objects with different state (except for ``id()`` and such ofc) cannot
 be equal.
 
+
+Serialization problems between different machines
+-------------------------------------------------
+different versions of the same library give som concrete examples.
+
 Serialization problems with big libraries
 -----------------------------------------
 pandas df.name
 pandas.rollingmean
 
 
+Serialization weirdness from builtin
+------------------------------------
+
+~~~python
+loaddump('{}:{}'.format)
+~~~
+
+~~~python
+TypeError: expected string or Unicode object, NoneType found
+~~~
+
 Pickle differences between python 2 and 3
 -----------------------------------------
+
 
 Summary
 -------
