@@ -60,6 +60,7 @@ Instances of built-in
 
 ~~~python
 1
+1L
 1.0
 complex(1, 1)
 'test'
