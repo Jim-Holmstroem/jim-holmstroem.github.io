@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Serialization in Python - The Complete Guide"
+title: "Serialization in Python - The Complete Guide [WIP]"
 date: 2015-1-10 17:10
 categories: python
 ---
