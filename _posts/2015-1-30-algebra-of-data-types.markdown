@@ -156,8 +156,65 @@ which states that a function returning a pair might as well be a pair of functio
 which states that a function mapping a pair to a value is the same as a function with two arguments (or with currying in mind, a function taking a value from `a` and returning a function of type `b -> c` which takes an argument of type `b` and returns a value of type `c`)
 And again it's just a matter on how you seen on things, they still have the same semantic meaning, one has two arguments explicitly and the for the other one the arguments are packed into a pair (structural difference).
 
-Recursion
----------
+Recursive Data Types
+--------------------
+Recursive definition of a list
+{% highlight haskell %}
+data List x = () |  (x, (List x))  -- L(x) = 1 + x * L(x)
+data List' x = Nil | Cons x (List' x)  -- as usually defined
+{% endhighlight %}
+
+If we try to solve it for `List x` denoted $L$ (the definition above is shorted down to $L = 1 + xL$ for brevity)
+
+$$
+\begin{equation}
+    \begin{aligned}
+        L & = 1 + xL \\
+        L & = 1 + x(1 + xL) \\
+        L & = 1 + x + x^2(1+xL) \\
+          & ...\\
+        L & = 1 + x + x^2 + x^3 + x^4 + ...
+    \end{aligned}
+\end{equation}
+$$
+
+The result when read out is that $L$ is either empty (`1`) or (`+`) is one element from `x` or (`+`) has 2 elements from `x` or ... and so on and so on.
+Which is basically what a list is `() | (x,()) | (x,(x,())) | ...`
+
+
+A more complicated example is a tree, which can be defined by
+{% highlight haskell %}
+data Tree x = () | (Tree x, x, Tree x)  -- T(x) = 1 + T(x) x T(x) = 1 + x T(x)^2
+data Tree' x = Tip | Node (Tree' x) x (Tree' x)  -- as usually defined
+{% endhighlight %}
+
+Doing the same type of manipulation as before with trees instead of lists
+
+$$
+\begin{equation}
+    \begin{aligned}
+        T &= 1 + xT^2 \\
+        xT^2 - T + 1 &= 0 \\
+        T &= \frac{1 - \sqrt{1-4x}}{2x} \\
+        T &= 1 + x + 2x^2 + 5x^3 + 14x^4 + ...
+    \end{aligned}
+\end{equation}
+$$
+
+Keep in mind that we are still working with types and type algebra so the second order solution (3rd line) doesn't make much sense, however if you look up the power-series expansion (4th line) for it it makes sense.
+
+It states that a tree is either:
+
+0. Empty (`1`)
+1. A single element of type `x`
+2. 2 different trees of size 2
+3. 5 different trees of size 3
+4. 14 different trees of size 4
+5. ... and so on and so on
+
+Which amazingly corresponds to the number of different trees for the given size. *mind blown*
+Note that the product with integers in the power-series expansion is the same as saying addition `N` times. Ex. $2x^2 = x^2 + x^2$, i.e. these to elements or these two elements.
+
 
 
 {% highlight haskell %}
