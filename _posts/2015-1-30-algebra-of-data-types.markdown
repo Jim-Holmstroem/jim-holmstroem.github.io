@@ -5,7 +5,7 @@ date:   2015-01-30 18:00:00
 categories: programming type-theory
 ---
 
-This post is based on the presentation given in [Algebra of Algebraic Data Types](https://www.youtube.com/watch?v=YScIPA8RbVE) (highly recommended).
+This post is based on the first half of the presentation given in [Algebra of Algebraic Data Types](https://www.youtube.com/watch?v=YScIPA8RbVE) (highly recommended).
 
 Running
 -------
@@ -215,7 +215,9 @@ It states that a tree is either:
 Which amazingly corresponds to the number of different trees for the given size. *mind blown*
 Note that the product with integers in the power-series expansion is the same as saying addition `N` times. Ex. $2x^2 = x^2 + x^2$, i.e. these to elements or these two elements.
 
+To be less abstract we can take a look at Tree Bool, T(2) in the equations above you can count how many Trees there is with Bool as inner type and are of size say 3 which is $5\cdot 2^3=40$.
 
 
-{% highlight haskell %}
-{% endhighlight %}
+Still Hungry for Types?
+-----------------------
+Go and watch the second half of the presentation on which this post is based [Algebra of Algebraic Data Types](https://www.youtube.com/watch?v=YScIPA8RbVE).
