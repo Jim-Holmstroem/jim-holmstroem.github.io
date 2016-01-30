@@ -10,3 +10,9 @@ github_username:  jim-holmstroem
 
 # Build settings
 markdown: kramdown
+
+gems:
+    - jekyll-paginate
+    - redcarpet
+    - jekyll-gist
+    - pygments.rb
